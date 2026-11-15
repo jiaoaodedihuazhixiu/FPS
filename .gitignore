@@ -1,0 +1,33 @@
+# ============================================================
+# Unreal Engine 项目忽略规则 (UE 5.8)
+# ============================================================
+
+# ---- 引擎生成的构建产物 ----
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# ---- Unreal 自动生成的工程文件 ----
+*.sln
+*.slnx
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.xcodeproj
+*.xcworkspace
+
+# ---- IDE 私有目录 ----
+.vs/
+.idea/
+*.lnk
+
+# ---- 操作系统 / 杂项 ----
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
+*.tmp
