@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GASCharacter.generated.h"
 
@@ -10,11 +12,15 @@ class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class FPS_API AGASCharacter : public ACharacter
+class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
+	// Ability System Component
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UAbilitySystemComponent* AbilitySystemComponent;
+	
 	// Sets default values for this character's properties
 	AGASCharacter();
 	
@@ -23,10 +29,20 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	// Get AbilitySystemComponent
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	// Initialize the Ability System Component on the server
+	virtual void PossessedBy(AController* NewController) override;
+	
+	// Initialize the Ability System Component on the client
+	virtual void OnRep_PlayerState() override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	EGameplayEffectReplicationMode ASCReplicationMode = EGameplayEffectReplicationMode::Mixed;
+
 
 private:
 	// FP Arms

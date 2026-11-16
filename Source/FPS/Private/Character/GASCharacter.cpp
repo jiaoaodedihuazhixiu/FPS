@@ -40,6 +40,12 @@ AGASCharacter::AGASCharacter()
 	GetMesh()->bOnlyOwnerSee = false;
 	GetMesh()->bOwnerNoSee = true;
 	GetMesh()->bReceivesDecals = false;
+	
+	// Add the Ability System Component
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(ASCReplicationMode);
+	
 }
 
 // Called every frame
@@ -56,12 +62,28 @@ void AGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-// Called when the game starts or when spawned
-void AGASCharacter::BeginPlay()
+// return AbilitySystemComponent
+UAbilitySystemComponent* AGASCharacter::GetAbilitySystemComponent() const
 {
-	Super::BeginPlay();
-	
-
+	return AbilitySystemComponent;
 }
 
+void AGASCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
 
+void AGASCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
