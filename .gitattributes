@@ -42,3 +42,20 @@
 *.md   text eol=lf
 *.json text eol=lf
 *.uproject text eol=lf
+
+# ============================================================
+# GitHub Linguist —— 标记 C++ 为主导语言
+# ============================================================
+
+# ---- 头文件强制识别为 C++（避免被误判为 C / Objective-C） ----
+*.h   linguist-language=C++
+*.hpp linguist-language=C++
+*.cpp linguist-language=C++
+*.inl linguist-language=C++
+
+# ---- 不参与语言统计的目录 ----
+Content/**   linguist-vendored
+Config/**    linguist-vendored
+Docs/**      linguist-documentation
+Overview/**  linguist-documentation
+*.md         linguist-documentation

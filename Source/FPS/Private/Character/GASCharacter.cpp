@@ -17,7 +17,7 @@ AGASCharacter::AGASCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->TargetArmLength = 0.f;
-	SpringArm->bEnableCameraLag = true;
+	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 15.f;
 	SpringArm->bUsePawnControlRotation = true;
 	

@@ -17,6 +17,13 @@ class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface
 	GENERATED_BODY()
 
 public:
+	// FP Arms
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "First Person")
+	TObjectPtr<USkeletalMeshComponent> FirstPersonArms;
+	
+	UFUNCTION(BlueprintPure, Category = "First Person")
+	USkeletalMeshComponent* GetFirstPersonArms() const { return FirstPersonArms; }
+	
 	// Ability System Component
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
@@ -43,12 +50,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	EGameplayEffectReplicationMode ASCReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
-
 private:
-	// FP Arms
-	UPROPERTY(VisibleAnywhere, Category = "First Person")
-	TObjectPtr<USkeletalMeshComponent> FirstPersonArms;
-	
 	UPROPERTY(VisibleAnywhere, Category = "First Person")
 	TObjectPtr<USpringArmComponent> SpringArm;
 	

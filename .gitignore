@@ -31,3 +31,9 @@ desktop.ini
 .DS_Store
 *.log
 *.tmp
+
+# ---- 本机工具产物 / Office 临时锁文件 ----
+_dsh_tmp/
+_review_tmp/
+Overview/~$*
+Config/DefaultEditorPerProjectUserSettings.ini
