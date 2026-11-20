@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "InputAction.h"
+#include "Component/Combat.h"
 #include "GameFramework/Character.h"
+#include "Weapon/Weapon.h"
 #include "GASCharacter.generated.h"
 
 class UCameraComponent;
@@ -17,43 +20,58 @@ class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface
 	GENERATED_BODY()
 
 public:
-	// FP Arms
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "First Person")
-	TObjectPtr<USkeletalMeshComponent> FirstPersonArms;
-	
-	UFUNCTION(BlueprintPure, Category = "First Person")
-	USkeletalMeshComponent* GetFirstPersonArms() const { return FirstPersonArms; }
-	
-	// Ability System Component
+	AGASCharacter();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	
-	// Sets default values for this character's properties
-	AGASCharacter();
+	UFUNCTION(BlueprintPure)
+	USkeletalMeshComponent* GetFirstPersonArms() const { return FirstPersonArms; }
 	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintPure)
+	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
 
-	// Called to bind functionality to input
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	// Get AbilitySystemComponent
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
-	// Initialize the Ability System Component on the server
+
 	virtual void PossessedBy(AController* NewController) override;
-	
-	// Initialize the Ability System Component on the client
+
 	virtual void OnRep_PlayerState() override;
+	
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	EGameplayEffectReplicationMode ASCReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
+	
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	UCombat* CombatComponent;
+	
 	UPROPERTY(VisibleAnywhere, Category = "First Person")
 	TObjectPtr<USpringArmComponent> SpringArm;
 	
 	UPROPERTY(VisibleAnywhere, Category = "First Person")
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
+	
+	UPROPERTY(VisibleAnywhere, Category = "First Person")
+	TObjectPtr<USkeletalMeshComponent> FirstPersonArms;
+	
+	// Combat Inputs
+	UPROPERTY(EditAnywhere, Category = "FPS|Input")
+	TObjectPtr<UInputAction> IA_CycleWeapon;
+	
+	UPROPERTY(EditAnywhere, Category = "FPS|Input")
+	TObjectPtr<UInputAction> IA_Fire;
+	
+	UPROPERTY(EditAnywhere, Category = "FPS|Input")
+	TObjectPtr<UInputAction> IA_Aim;
+	
+	/*  Functions  */
+	void Input_CycleWeapon();
+	void Input_Aim();
+	void Input_Fire_Pressed();
+	void Input_Fire_Released();
 };

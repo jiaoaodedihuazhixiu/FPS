@@ -3,9 +3,11 @@
 
 #include "Character/GASCharacter.h"
 
+#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SlateWrapperTypes.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AGASCharacter::AGASCharacter()
@@ -46,6 +48,9 @@ AGASCharacter::AGASCharacter()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(ASCReplicationMode);
 	
+	// Component for Combat
+	CombatComponent = CreateDefaultSubobject<UCombat>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 // Called every frame
@@ -60,7 +65,36 @@ void AGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	UEnhancedInputComponent* CombatInputComponent = CastChecked<UEnhancedInputComponent>(GetOwner()->InputComponent);
+	
+	/*  战斗相关输入绑定  */
+	CombatInputComponent->BindAction(IA_CycleWeapon, ETriggerEvent::Started, this, &AGASCharacter::Input_CycleWeapon);
+	CombatInputComponent->BindAction(IA_Aim, ETriggerEvent::Started, this, &AGASCharacter::Input_Aim);
+	CombatInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &AGASCharacter::Input_Fire_Pressed);
+	CombatInputComponent->BindAction(IA_Fire, ETriggerEvent::Completed,this, &AGASCharacter::Input_Fire_Released);
 }
+
+/*  只作为转发函数调用CombatComponent里的Initiate函数  */
+void AGASCharacter::Input_CycleWeapon()
+{
+	CombatComponent->Initiate_CycleWeapon();
+}
+
+void AGASCharacter::Input_Aim()
+{
+	CombatComponent->Initiate_Aim();
+}
+
+void AGASCharacter::Input_Fire_Pressed()
+{
+	CombatComponent->Initiate_Fire_Pressed();
+}
+
+void AGASCharacter::Input_Fire_Released()
+{
+	CombatComponent->Initiate_Fire_Released();
+}
+
 
 // return AbilitySystemComponent
 UAbilitySystemComponent* AGASCharacter::GetAbilitySystemComponent() const
@@ -87,3 +121,4 @@ void AGASCharacter::OnRep_PlayerState()
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
+
