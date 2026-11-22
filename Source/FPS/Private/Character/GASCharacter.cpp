@@ -106,6 +106,11 @@ void AGASCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->SpawnInventoryWeapons();
+	}
+	
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -119,6 +124,26 @@ void AGASCharacter::OnRep_PlayerState()
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
+
+USkeletalMeshComponent* AGASCharacter::GetFirstPersonArms_Implementation() const
+{
+	return FirstPersonArms;
+}
+
+USkeletalMeshComponent* AGASCharacter::GetThirdPersonMesh_Implementation() const
+{
+	return GetMesh();
+}
+
+void AGASCharacter::BeginDestroy()
+{
+	Super::BeginDestroy();
+	
+	if (CombatComponent)
+	{
+		CombatComponent->DestroyInventoryWeapons();
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "InputAction.h"
 #include "Component/Combat.h"
 #include "GameFramework/Character.h"
+#include "Interface/PlayerInterface.h"
 #include "Weapon/Weapon.h"
 #include "GASCharacter.generated.h"
 
@@ -15,7 +16,7 @@ class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface
+class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface, public IPlayerInterface
 {
 	GENERATED_BODY()
 
@@ -25,11 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	
-	UFUNCTION(BlueprintPure)
-	USkeletalMeshComponent* GetFirstPersonArms() const { return FirstPersonArms; }
-	
-	UFUNCTION(BlueprintPure)
-	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	UCombat* CombatComponent;
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -40,16 +38,17 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 	
-
+	/* From IPlayerInterface */
+	virtual USkeletalMeshComponent* GetFirstPersonArms_Implementation() const override;
+	virtual USkeletalMeshComponent* GetThirdPersonMesh_Implementation() const override;
+	
+	virtual void BeginDestroy() override;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	EGameplayEffectReplicationMode ASCReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
-	
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Combat")
-	UCombat* CombatComponent;
-	
 	UPROPERTY(VisibleAnywhere, Category = "First Person")
 	TObjectPtr<USpringArmComponent> SpringArm;
 	

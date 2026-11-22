@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	
+	virtual void OnRep_Instigator() override;
+	
 	UFUNCTION(BlueprintPure)
 	USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
 	
@@ -26,7 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FPS|WeaponData")
 	UWeaponData* WeaponData;
 	
+	void AttachToOwingPawn();
 	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,4 +49,5 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> ThirdPersonMesh;
 	
+	void SetMeshVisibility(APawn* OwningPawn);
 };

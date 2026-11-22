@@ -16,7 +16,11 @@ UFPSAttributeSet::UFPSAttributeSet()
 void UFPSAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
+	/*DOREPLIFETIME_CONDITION_NOTIFY宏是 UE 属性复制系统的"注册入口"——告诉引擎：
+	 *这个 UPROPERTY 要参与网络复制，
+	 *按什么条件复制，
+	 *复制到客户端后要不要触发 OnRep 回调。*/
 	DOREPLIFETIME_CONDITION_NOTIFY(UFPSAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UFPSAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UFPSAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);

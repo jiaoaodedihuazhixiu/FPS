@@ -33,6 +33,57 @@ AWeapon::AWeapon()
 	ThirdPersonMesh->SetupAttachment(WeaponRoot);
 }
 
+void AWeapon::OnRep_Instigator()
+{
+	Super::OnRep_Instigator();
+	AttachToOwingPawn();
+}
+
+void AWeapon::AttachToOwingPawn()
+{
+	APawn* OwningCharacter = GetInstigator();
+	if (!IsValid(OwningCharacter) || !OwningCharacter->Implements<UPlayerInterface>())
+	{
+		return;
+	}
+	
+	SetMeshVisibility(OwningCharacter);
+	
+	if (!IsValid(WeaponData))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: WeaponData 未配置，跳过挂点"), *GetName());
+		return;
+	}
+	
+	const FName AttachSocketName = WeaponData->GripPoints;
+	USkeletalMeshComponent* CharacterFirstPersonMesh = IPlayerInterface::Execute_GetFirstPersonArms(OwningCharacter);
+	USkeletalMeshComponent* CharacterThirdPersonMesh = IPlayerInterface::Execute_GetThirdPersonMesh(OwningCharacter);
+	
+	if (CharacterFirstPersonMesh)
+	{
+		FirstPersonMesh->AttachToComponent(CharacterFirstPersonMesh, FAttachmentTransformRules::KeepRelativeTransform, AttachSocketName);
+	}
+	if (CharacterThirdPersonMesh)
+	{
+		ThirdPersonMesh->AttachToComponent(CharacterThirdPersonMesh, FAttachmentTransformRules::KeepRelativeTransform, AttachSocketName);
+	}
+}
+
+void AWeapon::SetMeshVisibility(APawn* OwningPawn)
+{
+	if (OwningPawn->IsLocallyControlled())
+	{
+		FirstPersonMesh->SetHiddenInGame(false);
+		ThirdPersonMesh->SetHiddenInGame(true);
+	}
+	else
+	{
+		FirstPersonMesh->SetHiddenInGame(true);
+		ThirdPersonMesh->SetHiddenInGame(false);
+	}
+}
+
+
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
@@ -40,3 +91,4 @@ void AWeapon::BeginPlay()
 	
 	
 }
+
