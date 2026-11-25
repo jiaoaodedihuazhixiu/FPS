@@ -29,6 +29,7 @@ public:
 	UWeaponData* WeaponData;
 	
 	void AttachToOwingPawn();
+	void WeaponTrace(FHitResult& OutHit);
 	
 
 protected:

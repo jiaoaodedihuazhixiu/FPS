@@ -7,7 +7,6 @@
 #include "Weapon/Data/WeaponData.h"
 #include "Combat.generated.h"
 
-
 class AWeapon;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -32,6 +31,8 @@ public:
 	// UPROPERTY(EditDefaultsOnly, Category = "FPS|Weapon")
 	// TObjectPtr<UWeaponData> WeaponData;
 	
+	AWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+	
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void SpawnInventoryWeapons();
 	void DestroyInventoryWeapons();
@@ -51,5 +52,6 @@ private:
 	TArray<TSubclassOf<AWeapon>> DefaultWeaponClass;
 	
 	AWeapon* SpawnWeapon(TSubclassOf<AWeapon> WeaponClass) const;
+	
 };
 

@@ -2,6 +2,17 @@
 
 基于 **Unreal Engine 5.8** + **GameplayAbilitySystem** 的第一人称射击项目，作为学习与作品集项目维护。
 
+## 当前版本：FPS-v0.2.2（2026.11.25）
+
+本版本说明（详细记录见 [Docs/Changelog/FPS-v0.2.2.md](Docs/Changelog/FPS-v0.2.2.md)）：
+
+1. **新增文件**
+   - `Source/FPS/Public/Tags/FPSTags.h` / `Source/FPS/Private/Tags/FPSTags.cpp`：C++ native GameplayTag 模块，集中声明定义项目标签（替代 ini 里的条目）；
+   - `Source/FPS/Public/AbilitySystem/GameplayAbilities/GA_Aim_Base.h/.cpp`：瞄准能力骨架；
+   - `Source/FPS/Public/AbilitySystem/GameplayAbilities/GA_Dash_Base.h/.cpp`：冲刺能力骨架。
+2. **射线检测已完成**：`GA_Fire_Base` 与 `Weapon` 打通开火射线检测 —— `Weapon::WeaponTrace()` 从玩家视点按 `WeaponData` 的 `Range` / `TraceRadius` 做球形扫描（`ECC_Weapon` 通道），`GA_Fire_Base::FireOnce()` 在服务器端调用取命中结果，附 debug 轨迹绘制。
+3. **下一步目标**：补完动画（Montage 资产 + 动画蓝图接线），完成 `GA_Fire_Base::FireOnce()` 里的 PlayMontageAndWait 段。
+
 ## 分支说明
 
 | 分支 | 实现方式 | 定位 |

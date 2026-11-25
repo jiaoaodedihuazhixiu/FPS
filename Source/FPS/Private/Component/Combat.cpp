@@ -3,13 +3,14 @@
 
 #include "Component/Combat.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/GameplayAbilities/GA_Base.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 
 
 UCombat::UCombat()
 {
-
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
@@ -52,29 +53,47 @@ void UCombat::Initiate_Aim()
 
 void UCombat::Initiate_Fire_Pressed()
 {
-	GEngine->AddOnScreenDebugMessage(
-		-1, 
-		5.f, 
-		FColor::Green, 
-		TEXT("Initiate_Fire_Pressed"), 
-		false);
+	// GEngine->AddOnScreenDebugMessage(
+	// 	-1, 
+	// 	5.f, 
+	// 	FColor::Green, 
+	// 	TEXT("Initiate_Fire_Pressed"), 
+	// 	false);
+	//
+	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
+	if (ASC)
+	{
+		ASC->AbilityLocalInputPressed((int32)EFPSInputID::Fire);
+	}
 }
 
 void UCombat::Initiate_Fire_Released()
 {
-	GEngine->AddOnScreenDebugMessage(
-		-1, 
-		5.f, 
-		FColor::Green, 
-		TEXT("Initiate_Fire_Released"), 
-		false);
+	// GEngine->AddOnScreenDebugMessage(
+	// 	-1, 
+	// 	5.f, 
+	// 	FColor::Green, 
+	// 	TEXT("Initiate_Fire_Released"), 
+	// 	false);
+	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
+	if (ASC)
+	{
+		ASC->AbilityLocalInputReleased((int32)EFPSInputID::Fire);
+	}
 }
 
 void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 {
+	if (!WeaponToEquip)
+	{
+		return;
+	}
+	
 	/* 导致属性更改以触发OnRep函数 */
 	CurrentWeapon = WeaponToEquip;
 	CurrentWeapon->AttachToOwingPawn();
+	
+	
 }
 
 void UCombat::SpawnInventoryWeapons()

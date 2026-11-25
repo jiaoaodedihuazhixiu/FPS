@@ -3,8 +3,11 @@
 
 #include "Weapon/Weapon.h"
 
+#include "KismetTraceUtils.h"
 #include "Character/GASCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "FPS/FPS.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -66,6 +69,59 @@ void AWeapon::AttachToOwingPawn()
 	if (CharacterThirdPersonMesh)
 	{
 		ThirdPersonMesh->AttachToComponent(CharacterThirdPersonMesh, FAttachmentTransformRules::KeepRelativeTransform, AttachSocketName);
+	}
+}
+
+void AWeapon::WeaponTrace(FHitResult& OutHit)
+{
+	if (!WeaponData)
+	{
+		return;
+	}
+	
+	FCollisionQueryParams QueryParams;
+	QueryParams.bReturnPhysicalMaterial = true;
+	QueryParams.AddIgnoredActor(GetOwner());
+	
+	FCollisionResponseParams ResponseParams;
+	ResponseParams.CollisionResponse.SetAllChannels(ECR_Ignore);
+	ResponseParams.CollisionResponse.SetResponse(ECC_Pawn, ECR_Block);
+	ResponseParams.CollisionResponse.SetResponse(ECC_WorldStatic, ECR_Block);
+	ResponseParams.CollisionResponse.SetResponse(ECC_WorldDynamic, ECR_Block);
+	ResponseParams.CollisionResponse.SetResponse(ECC_PhysicsBody, ECR_Block);
+	
+	ensure(GetInstigator());
+	if (APlayerController* PC = Cast<APlayerController>(GetInstigator()->GetController()))
+	{
+		FVector EyeWorldLocation;
+		FRotator EyeWorldRotation;
+		PC->GetActorEyesViewPoint(EyeWorldLocation, EyeWorldRotation);
+		const FVector EyeWorldDirection = UKismetMathLibrary::GetForwardVector(EyeWorldRotation);
+		
+		const FVector Start = EyeWorldLocation;
+		const FVector End = Start + EyeWorldDirection * WeaponData->Range;
+		
+		const bool bHit = GetWorld()->SweepSingleByChannel(
+			OutHit,
+			Start,
+			End,
+			FQuat::Identity,
+			FPSTraceChannels::ECC_Weapon,
+			FCollisionShape::MakeSphere(WeaponData->TraceRadius),
+			QueryParams,
+			ResponseParams);
+		
+		DrawDebugSphereTraceSingle(
+			GetWorld(),
+			Start,
+			End,
+			WeaponData->TraceRadius,
+			EDrawDebugTrace::ForDuration,
+			bHit,
+			OutHit,
+			FColor::Green,
+			FColor::Red,
+			5.f);
 	}
 }
 

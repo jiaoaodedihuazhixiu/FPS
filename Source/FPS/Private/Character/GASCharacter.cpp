@@ -4,6 +4,7 @@
 #include "Character/GASCharacter.h"
 
 #include "EnhancedInputComponent.h"
+#include "AbilitySystem/GameplayAbilities/GA_Fire_Base.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SlateWrapperTypes.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -106,15 +107,22 @@ void AGASCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	
+		// demo 临时：现在没有 GA 蓝图子类，直接授 C++ 类
+		AbilitySystemComponent->GiveAbility(
+			FGameplayAbilitySpec(UGA_Fire_Base::StaticClass(), 1,
+				(int32)EFPSInputID::Fire));
+	}
+	
 	if (IsValid(CombatComponent))
 	{
 		CombatComponent->SpawnInventoryWeapons();
 	}
 	
-	if (AbilitySystemComponent)
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
+	
 }
 
 void AGASCharacter::OnRep_PlayerState()
