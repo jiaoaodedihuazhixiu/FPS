@@ -70,7 +70,8 @@ private:
 	
 	/*  Functions  */
 	void Input_CycleWeapon();
-	void Input_Aim();
+	void Input_Aim_Pressed();
+	void Input_Aim_Released();
 	void Input_Fire_Pressed();
 	void Input_Fire_Released();
 };

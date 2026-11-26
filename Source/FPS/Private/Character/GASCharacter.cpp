@@ -4,6 +4,7 @@
 #include "Character/GASCharacter.h"
 
 #include "EnhancedInputComponent.h"
+#include "AbilitySystem/GameplayAbilities/GA_Aim_Base.h"
 #include "AbilitySystem/GameplayAbilities/GA_Fire_Base.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SlateWrapperTypes.h"
@@ -70,7 +71,8 @@ void AGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	
 	/*  战斗相关输入绑定  */
 	CombatInputComponent->BindAction(IA_CycleWeapon, ETriggerEvent::Started, this, &AGASCharacter::Input_CycleWeapon);
-	CombatInputComponent->BindAction(IA_Aim, ETriggerEvent::Started, this, &AGASCharacter::Input_Aim);
+	CombatInputComponent->BindAction(IA_Aim, ETriggerEvent::Started, this, &AGASCharacter::Input_Aim_Pressed);
+	CombatInputComponent->BindAction(IA_Aim, ETriggerEvent::Completed, this, &AGASCharacter::Input_Aim_Released);
 	CombatInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &AGASCharacter::Input_Fire_Pressed);
 	CombatInputComponent->BindAction(IA_Fire, ETriggerEvent::Completed,this, &AGASCharacter::Input_Fire_Released);
 }
@@ -81,9 +83,20 @@ void AGASCharacter::Input_CycleWeapon()
 	CombatComponent->Initiate_CycleWeapon();
 }
 
-void AGASCharacter::Input_Aim()
+void AGASCharacter::Input_Aim_Pressed()
 {
-	CombatComponent->Initiate_Aim();
+	GEngine->AddOnScreenDebugMessage(-1, 3.f,
+			FColor::Red,
+			TEXT("Input_Aim_Pressed"));
+	CombatComponent->Initiate_Aim_Pressed();
+}
+
+void AGASCharacter::Input_Aim_Released()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 3.f,
+			FColor::Red,
+			TEXT("Input_Aim_Released"));
+	CombatComponent->Initiate_Aim_Released();
 }
 
 void AGASCharacter::Input_Fire_Pressed()
@@ -111,10 +124,13 @@ void AGASCharacter::PossessedBy(AController* NewController)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	
-		// demo 临时：现在没有 GA 蓝图子类，直接授 C++ 类
-		AbilitySystemComponent->GiveAbility(
-			FGameplayAbilitySpec(UGA_Fire_Base::StaticClass(), 1,
-				(int32)EFPSInputID::Fire));
+		if (HasAuthority())
+		{
+			// demo 临时：现在没有 GA 蓝图子类，直接授 C++ 类
+			AbilitySystemComponent->GiveAbility(
+				FGameplayAbilitySpec(UGA_Fire_Base::StaticClass(), 1,
+					(int32)EFPSInputID::Fire));
+		}
 	}
 	
 	if (IsValid(CombatComponent))
@@ -122,7 +138,17 @@ void AGASCharacter::PossessedBy(AController* NewController)
 		CombatComponent->SpawnInventoryWeapons();
 	}
 	
-	
+	if (AbilitySystemComponent)
+	{
+		if (HasAuthority())
+		{
+			// demo 临时：现在没有 GA 蓝图子类，直接授 C++ 类
+			
+			AbilitySystemComponent->GiveAbility(
+				FGameplayAbilitySpec(UGA_Aim_Base::StaticClass(), 1,
+					(int32)EFPSInputID::Aim));
+		}
+	}
 }
 
 void AGASCharacter::OnRep_PlayerState()

@@ -23,7 +23,8 @@ public:
 	
 	/*  战斗输入的入口，在这里面实现真正逻辑  */
 	void Initiate_CycleWeapon();
-	void Initiate_Aim();
+	void Initiate_Aim_Pressed();
+	void Initiate_Aim_Released();
 	void Initiate_Fire_Pressed();
 	void Initiate_Fire_Released();
 	
@@ -36,6 +37,15 @@ public:
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void SpawnInventoryWeapons();
 	void DestroyInventoryWeapons();
+	
+	UPROPERTY(BlueprintReadOnly, Category="FPS|Aim", ReplicatedUsing=OnRep_bIsAiming)
+	bool bIsAiming;
+	
+	UFUNCTION()
+	void OnRep_bIsAiming(bool PrevIsAiming);
+	
+	UFUNCTION()
+	void SetIsAiming(bool IsAiming);
 	
 protected:
 	UPROPERTY(Transient, BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentWeapon)

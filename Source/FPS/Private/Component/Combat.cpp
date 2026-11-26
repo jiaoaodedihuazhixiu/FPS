@@ -29,6 +29,7 @@ void UCombat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	
 	DOREPLIFETIME(UCombat, InventoryWeapons);
 	DOREPLIFETIME(UCombat, CurrentWeapon);
+	DOREPLIFETIME(UCombat, bIsAiming);
 }
 
 void UCombat::Initiate_CycleWeapon()
@@ -41,25 +42,26 @@ void UCombat::Initiate_CycleWeapon()
 		false);
 }
 
-void UCombat::Initiate_Aim()
+void UCombat::Initiate_Aim_Pressed()
 {
-	GEngine->AddOnScreenDebugMessage(
-		-1, 
-		5.f, 
-		FColor::Green, 
-		TEXT("Initiate_Aim"),
-		false);
+	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
+	if (ASC)
+	{
+		ASC->AbilityLocalInputPressed((int32)EFPSInputID::Aim);
+	}
+}
+
+void UCombat::Initiate_Aim_Released()
+{
+	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
+	if (ASC)
+	{
+		ASC->AbilityLocalInputReleased((int32)EFPSInputID::Aim);
+	}
 }
 
 void UCombat::Initiate_Fire_Pressed()
 {
-	// GEngine->AddOnScreenDebugMessage(
-	// 	-1, 
-	// 	5.f, 
-	// 	FColor::Green, 
-	// 	TEXT("Initiate_Fire_Pressed"), 
-	// 	false);
-	//
 	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
 	if (ASC)
 	{
@@ -69,12 +71,6 @@ void UCombat::Initiate_Fire_Pressed()
 
 void UCombat::Initiate_Fire_Released()
 {
-	// GEngine->AddOnScreenDebugMessage(
-	// 	-1, 
-	// 	5.f, 
-	// 	FColor::Green, 
-	// 	TEXT("Initiate_Fire_Released"), 
-	// 	false);
 	UAbilitySystemComponent* ASC = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
 	if (ASC)
 	{
@@ -124,6 +120,16 @@ void UCombat::DestroyInventoryWeapons()
 			Weapon->Destroy();
 		}
 	}
+}
+
+void UCombat::OnRep_bIsAiming(bool PrevIsAiming)
+{
+	SetIsAiming(PrevIsAiming);
+}
+
+void UCombat::SetIsAiming(bool IsAiming)
+{
+	bIsAiming = IsAiming;
 }
 
 void UCombat::OnRep_CurrentWeapon(AWeapon* PrevWeapon) const

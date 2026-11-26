@@ -72,7 +72,19 @@ void UGA_Fire_Base::ActivateAbility(
 	CurrentWeapon = Weapon;
 	CurrentWeaponData = WeaponData;
 	
-	/* WaitReleased
+	// 先挂监听再开火：StartFire 里若因弹药耗尽直接 EndAbility，
+	// 任务会随能力一起回收，不会留下"能力已结束、任务还在等"的孤儿。
+	StartFire();
+	if (!IsActive())
+	{
+		return;
+	}
+	
+	UAbilityTask_WaitInputRelease* ReleaseTask =
+		UAbilityTask_WaitInputRelease::WaitInputRelease(this, /*bTestAlreadyReleased=*/true);
+	
+	/* 
+	 * WaitReleased
 	 * 这个任务等的不是 Enhanced Input 的 Completed，而是 ASC 的通用复制事件 InputReleased。
 	 * 唯一合法的触发路径是：ASC->AbilityLocalInputReleased(InputID)
 	 *     AbilityLocalInputReleased
@@ -86,21 +98,10 @@ void UGA_Fire_Base::ActivateAbility(
 	 * （说明这次不是"按住"触发的），任务立刻回调，效果退化成"打一发就结束"，
 	 * 而不是把 State.Firing 卡在身上等一个永远不来的松手。
 	 */
-	UAbilityTask_WaitInputRelease* ReleaseTask =
-		UAbilityTask_WaitInputRelease::WaitInputRelease(this, /*bTestAlreadyReleased=*/true);
-	
 	if (ReleaseTask)
 	{
 		ReleaseTask->OnRelease.AddDynamic(this, &UGA_Fire_Base::OnInputReleased);
 		ReleaseTask->ReadyForActivation();
-	}
-	
-	// 先挂监听再开火：StartFire 里若因弹药耗尽直接 EndAbility，
-	// 任务会随能力一起回收，不会留下"能力已结束、任务还在等"的孤儿。
-	StartFire();
-	if (!IsActive())
-	{
-		return;
 	}
 }
 
@@ -122,24 +123,6 @@ void UGA_Fire_Base::EndAbility(const FGameplayAbilitySpecHandle Handle,
 		ActivationInfo, 
 		bReplicateEndAbility, 
 		bWasCancelled);
-}
-
-AWeapon* UGA_Fire_Base::ResolveWeapon(const FGameplayAbilityActorInfo* ActorInfo) const
-{
-	if (!ActorInfo) { return nullptr; }
-	AActor* Avatar = ActorInfo->AvatarActor.Get();
-	if (!Avatar) { return nullptr; }
-
-	UCombat* Combat = Avatar->FindComponentByClass<UCombat>();
-	return Combat ? Combat->GetCurrentWeapon() : nullptr;
-}
-
-UWeaponData* UGA_Fire_Base::ResolveWeaponData(const FGameplayAbilityActorInfo* ActorInfo) const
-{
-	/* 直接复用 ResolveWeapon：原来的 FindComponentByClass<UCombat>()->GetCurrentWeapon()
-	 * 没判空，角色身上没有 Combat 组件时会在 ActivateAbility 里空指针崩溃。 */
-	const AWeapon* Weapon = ResolveWeapon(ActorInfo);
-	return Weapon ? Weapon->WeaponData : nullptr;
 }
 
 void UGA_Fire_Base::FireOnce()
@@ -196,3 +179,19 @@ void UGA_Fire_Base::StopFire()
 }
 
 
+AWeapon* UGA_Fire_Base::ResolveWeapon(const FGameplayAbilityActorInfo* ActorInfo) const
+{
+	if (!ActorInfo) { return nullptr; }
+	
+	AActor* Avatar = ActorInfo->AvatarActor.Get();
+	if (!Avatar) { return nullptr; }
+
+	UCombat* Combat = Avatar->FindComponentByClass<UCombat>();
+	return Combat ? Combat->GetCurrentWeapon() : nullptr;
+}
+
+UWeaponData* UGA_Fire_Base::ResolveWeaponData(const FGameplayAbilityActorInfo* ActorInfo) const
+{
+	const AWeapon* Weapon = ResolveWeapon(ActorInfo);
+	return Weapon ? Weapon->WeaponData : nullptr;
+}

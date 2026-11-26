@@ -28,4 +28,6 @@ class FPS_API UGA_Base : public UGameplayAbility
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|UI")
 	bool bShouldShowOnHUD = false;
+	
+
 };
