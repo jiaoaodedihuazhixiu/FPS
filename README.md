@@ -2,16 +2,14 @@
 
 基于 **Unreal Engine 5.8** + **GameplayAbilitySystem** 的第一人称射击项目，作为学习与作品集项目维护。
 
-## 当前版本：FPS-v0.2.2（2026.11.25）
+## 当前版本：FPS-v0.2.3（2026.11.26）
 
-本版本说明（详细记录见 [Docs/Changelog/FPS-v0.2.2.md](Docs/Changelog/FPS-v0.2.2.md)）：
+本版本说明（详细记录见 [Docs/Changelog/FPS-v0.2.3.md](Docs/Changelog/FPS-v0.2.3.md)）：
 
-1. **新增文件**
-   - `Source/FPS/Public/Tags/FPSTags.h` / `Source/FPS/Private/Tags/FPSTags.cpp`：C++ native GameplayTag 模块，集中声明定义项目标签（替代 ini 里的条目）；
-   - `Source/FPS/Public/AbilitySystem/GameplayAbilities/GA_Aim_Base.h/.cpp`：瞄准能力骨架；
-   - `Source/FPS/Public/AbilitySystem/GameplayAbilities/GA_Dash_Base.h/.cpp`：冲刺能力骨架。
-2. **射线检测已完成**：`GA_Fire_Base` 与 `Weapon` 打通开火射线检测 —— `Weapon::WeaponTrace()` 从玩家视点按 `WeaponData` 的 `Range` / `TraceRadius` 做球形扫描（`ECC_Weapon` 通道），`GA_Fire_Base::FireOnce()` 在服务器端调用取命中结果，附 debug 轨迹绘制。
-3. **下一步目标**：补完动画（Montage 资产 + 动画蓝图接线），完成 `GA_Fire_Base::FireOnce()` 里的 PlayMontageAndWait 段。
+1. **瞄准能力落地**：`GA_Aim_Base` 完成 `ActivateAbility` / `EndAbility` 全链路 —— 按住右键激活、松开结束（`WaitInputRelease`），本地预测执行，激活持有 `State.Aiming` 标签；
+2. **`Combat` 新增 `bIsAiming`**：复制变量（`ReplicatedUsing`），作为 ABP `Blend Poses by Bool` 的混合开关；瞄准输入拆分为 Pressed / Released 双通道，与开火一致走 ASC 通用输入事件；
+3. **第一人称瞄准动画**：`ABP_FirstPerson` 新增 ADS 姿态，按 `bIsAiming` 在常态与瞄准姿态间混合；
+4. **下一步目标**：补充瞄准视野（FOV 缩放）与瞄准偏移（Aim Offset）。
 
 ## 分支说明
 

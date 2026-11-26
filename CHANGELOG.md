@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 摘要 | 说明文件 |
 | --- | --- | --- | --- |
+| `FPS-v0.2.3` | 2026.11.26 | GA_Aim_Base 完成 Activate/End（按住瞄准、松开结束，本地预测）；Combat 新增复制变量 bIsAiming 辅助 ABP Blend Poses by Bool；新增第一人称瞄准动画；下一步补瞄准视野（FOV）与瞄准偏移（Aim Offset） | [FPS-v0.2.3](Docs/Changelog/FPS-v0.2.3.md) |
 | `FPS-v0.2.2` | 2026.11.25 | GA_Fire_Base 与 Weapon 完成射线检测（球形扫描 + ECC_Weapon 通道）；GameplayTag 迁移为 C++ native tag（FPSTags）；新增 GA_Aim_Base / GA_Dash_Base 骨架；下一步补动画与 PlayMontageAndWait | [FPS-v0.2.2](Docs/Changelog/FPS-v0.2.2.md) |
 | `FPS-v0.2.1` | 2026.11.22 | **备份版本，无新功能**：存档武器双网格挂载链路；记录第三人称步枪歪斜根因（socket 挂在指骨 middle_01_r），修复待原素材到位后实施 | [FPS-v0.2.1](Docs/Changelog/FPS-v0.2.1.md) |
 | `FPS-v0.2.0` | 2026.11.20 | 放弃全蓝图 GA 方案，确立 C++ 主干 + 蓝图表现混合架构；新增 FPSAttributeSet / GA_Base / GA_Fire_Base / UCombat，删除蓝图开火族与 GA_Dash；开火链路暂不可用 | [FPS-v0.2.0](Docs/Changelog/FPS-v0.2.0.md) |
