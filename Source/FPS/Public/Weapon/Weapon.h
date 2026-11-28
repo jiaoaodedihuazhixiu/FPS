@@ -30,7 +30,6 @@ public:
 	
 	void AttachToOwingPawn();
 	void WeaponTrace(FHitResult& OutHit);
-	
 
 protected:
 	// Called when the game starts or when spawned
@@ -39,7 +38,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "FPS|WeaponType")
 	FGameplayTag WeaponType;
 	
-
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> WeaponRoot;

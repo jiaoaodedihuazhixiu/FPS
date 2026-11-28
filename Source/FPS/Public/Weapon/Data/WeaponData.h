@@ -91,4 +91,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TraceRadius")
 	float TraceRadius = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aim")
+	float AimFOV = 90.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FABRIK")
+	FName FABRIK_SocketName = "FABRIK_Socket";
 };

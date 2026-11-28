@@ -4,6 +4,7 @@
 #include "AbilitySystem/GameplayAbilities/GA_Aim_Base.h"
 
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
+#include "Character/GASCharacter.h"
 
 
 UGA_Aim_Base::UGA_Aim_Base()
@@ -69,6 +70,8 @@ void UGA_Aim_Base::ActivateAbility(
 	AActor* Avatar = ActorInfo->AvatarActor.Get();
 	UCombat* Combat = Avatar->GetComponentByClass<UCombat>();
 	Combat->SetIsAiming(true);
+	AGASCharacter* Character = Cast<AGASCharacter>(ActorInfo->AvatarActor.Get());
+	Character->OnAim(Combat->bIsAiming);
 	
 	UAbilityTask_WaitInputRelease* ReleaseTask =
 		UAbilityTask_WaitInputRelease::WaitInputRelease(this, /*bTestAlreadyReleased=*/true);
@@ -92,6 +95,8 @@ void UGA_Aim_Base::EndAbility(
 	AActor* Avatar = ActorInfo->AvatarActor.Get();
 	UCombat* Combat = Avatar->GetComponentByClass<UCombat>();
 	Combat->SetIsAiming(false);
+	AGASCharacter* Character = Cast<AGASCharacter>(ActorInfo->AvatarActor.Get());
+	Character->OnAim(Combat->bIsAiming);
 }
 
 void UGA_Aim_Base::OnInputReleased(float TimeHeld)

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GameplayAbilities/GA_Base.h"
+#include "Character/GASCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 
@@ -124,7 +125,10 @@ void UCombat::DestroyInventoryWeapons()
 
 void UCombat::OnRep_bIsAiming(bool PrevIsAiming)
 {
-	SetIsAiming(PrevIsAiming);
+	if (AGASCharacter* Character = Cast<AGASCharacter>(GetOwner()))
+	{
+		Character->OnAim(bIsAiming);
+	}
 }
 
 void UCombat::SetIsAiming(bool IsAiming)

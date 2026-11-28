@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "InputAction.h"
 #include "Component/Combat.h"
+#include "Enums/TurnInPlaceEnum.h"
 #include "GameFramework/Character.h"
 #include "Interface/PlayerInterface.h"
 #include "Weapon/Weapon.h"
@@ -22,6 +23,12 @@ class FPS_API AGASCharacter : public ACharacter, public IAbilitySystemInterface,
 
 public:
 	AGASCharacter();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "First Person")
+	TObjectPtr<UCameraComponent> FirstPersonCamera;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "First Person")
+	float DefaultFieldOfView = 105.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
@@ -29,6 +36,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	UCombat* CombatComponent;
 
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -44,6 +52,30 @@ public:
 	
 	virtual void BeginDestroy() override;
 	
+	UFUNCTION(BlueprintCallable)
+	FRotator GetFixedRotation() const;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAim(bool IsAiming);
+	
+	UPROPERTY(BlueprintReadOnly, Category = "FPS|FABRIK")
+	FTransform FABRIK_SocketTransform;
+	
+	UFUNCTION(BlueprintCallable)
+	bool HasCurrentWeapon() const;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "FPS|TurnInPlace")
+	float AO_Yaw;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "FPS|TurnInPlace|Strafing")
+	float MovementOffsetYaw;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FPS|TurnInPlace")
+	float InterpSpeed = 4.f;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "FPS|TurnInPlace")
+	ETurnInPlaceEnum TurningStatus = ETurnInPlaceEnum::NoTurning;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	EGameplayEffectReplicationMode ASCReplicationMode = EGameplayEffectReplicationMode::Mixed;
@@ -53,10 +85,10 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArm;
 	
 	UPROPERTY(VisibleAnywhere, Category = "First Person")
-	TObjectPtr<UCameraComponent> FirstPersonCamera;
-	
-	UPROPERTY(VisibleAnywhere, Category = "First Person")
 	TObjectPtr<USkeletalMeshComponent> FirstPersonArms;
+	
+	FRotator StartingAimRotation;
+	float InterpAO_Yaw;
 	
 	// Combat Inputs
 	UPROPERTY(EditAnywhere, Category = "FPS|Input")
@@ -74,4 +106,8 @@ private:
 	void Input_Aim_Released();
 	void Input_Fire_Pressed();
 	void Input_Fire_Released();
+	
+	void CalculateFABRIKTransform();
+	void CalculateTurnInPlaceParameters(float DeltaTime);
+	void TurnInPlace(float DeltaTime);
 };
