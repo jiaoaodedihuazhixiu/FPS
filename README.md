@@ -2,14 +2,15 @@
 
 基于 **Unreal Engine 5.8** + **GameplayAbilitySystem** 的第一人称射击项目，作为学习与作品集项目维护。
 
-## 当前版本：FPS-v0.2.3（2026.11.26）
+## 当前版本：FPS-v0.2.4（2026.11.28）
 
-本版本说明（详细记录见 [Docs/Changelog/FPS-v0.2.3.md](Docs/Changelog/FPS-v0.2.3.md)）：
+本版本说明（详细记录见 [Docs/Changelog/FPS-v0.2.4.md](Docs/Changelog/FPS-v0.2.4.md)）：
 
-1. **瞄准能力落地**：`GA_Aim_Base` 完成 `ActivateAbility` / `EndAbility` 全链路 —— 按住右键激活、松开结束（`WaitInputRelease`），本地预测执行，激活持有 `State.Aiming` 标签；
-2. **`Combat` 新增 `bIsAiming`**：复制变量（`ReplicatedUsing`），作为 ABP `Blend Poses by Bool` 的混合开关；瞄准输入拆分为 Pressed / Released 双通道，与开火一致走 ASC 通用输入事件；
-3. **第一人称瞄准动画**：`ABP_FirstPerson` 新增 ADS 姿态，按 `bIsAiming` 在常态与瞄准姿态间混合；
-4. **下一步目标**：补充瞄准视野（FOV 缩放）与瞄准偏移（Aim Offset）。
+1. **动画基本完成**：第三人称 `ABP_ThirdPerson` 落地站立 / 下蹲状态机、Aim Offset（`AO_Yaw` 驱动上半身）、原地转身状态（`TurningStatus` 驱动）与右手 FABRIK 持枪 IK（启用 AnimationWarping 插件）；
+2. **新增 Enums 文件夹**：`Source/FPS/Public/Enums` 与 `Source/FPS/Private/Enums`，首个成员 `ETurnInPlaceEnum`（Left / Right / NoTurning），供 C++ 与动画蓝图共享；
+3. **瞄准 FOV 缩放**：新增 `CF_Aim_FOV` 曲线与 `OnAim` 蓝图事件，瞄准时按 `WeaponData.AimFOV` 收紧视野；顺带修复 `OnRep_bIsAiming` 笔误；
+4. **已知问题**：原地转身存在 bug —— 一转向就全身整体跟随，做不到上半身先转、下半身延迟跟随；已定位原因（`bUseControllerRotationYaw` + 朝向扭曲作用于全身姿势），但这不是项目重点，不打算修复；
+5. **下一步目标**：添加蒙太奇（Montage）并完善 `GA_Fire_Base`；尝试为 `GA_Fire_Base` 添加 cooldown（冷却）与全自动模式。
 
 ## 分支说明
 
